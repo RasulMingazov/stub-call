@@ -7,19 +7,19 @@ import kotlin.test.assertFailsWith
 class StubCall2Test {
 
     @Test
-    fun `passes both arguments through to calledWith`() {
-        val stub = StubCall2.value<String, Int, Unit>(Unit)
+    fun `GIVEN invoked with two arguments, WHEN calledWith, THEN matches exact arguments only`() {
+        val stub = StubCall2.returns<String, Int, Unit>(Unit)
 
-        stub("acc-1", 100)
+        stub.invoke("acc-1", 100)
 
         stub.calledWith("acc-1", 100)
         assertFailsWith<StubCallAssertionError> { stub.calledWith("acc-1", 200) }
     }
 
     @Test
-    fun `returns the stubbed value`() {
-        val stub = StubCall2.value<String, Int, Boolean>(true)
+    fun `GIVEN a stubbed value, WHEN invoked, THEN returns it`() {
+        val stub = StubCall2.returns<String, Int, Boolean>(true)
 
-        assertEquals(true, stub("acc-1", 100))
+        assertEquals(true, stub.invoke("acc-1", 100))
     }
 }

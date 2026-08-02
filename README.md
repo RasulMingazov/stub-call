@@ -1,75 +1,77 @@
 # StubCall
 
-Маленькая Kotlin/JVM библиотека для ручных тестовых double'ов: use case'ов, callback'ов и lambda-полей. Один объект умеет возвращать значение, бросать ошибку, запоминать вызовы и проверять факт вызова/аргументы.
+A small Kotlin/JVM library for hand-written test doubles: use cases, callbacks, and lambda fields. A single object can return a value, throw an error, record calls, and verify that it was called with the right arguments.
 
-Обычный JVM-модуль (без Kotlin Multiplatform) — подключается и в backend, и в Android-проекты одной и той же зависимостью.
+A plain JVM module (no Kotlin Multiplatform) — pulled into backend and Android projects alike with the same dependency.
 
-## Пример
+`invoke(...)` on `StubCallN` is a regular method, not an `operator`. Calls are written explicitly via `.invoke(...)`, with no magic around calling the object with parentheses.
+
+## Example
 
 ```kotlin
 class StubGetUserUseCase(user: User) : GetUserUseCase {
-    val invoke: StubCall1<String, User> = StubCall1.value(user)
-    override fun invoke(id: String): User = invoke(id)
+    val invoke: StubCall1<String, User> = StubCall1.returns(user)
+    override fun invoke(id: String): User = invoke.invoke(id)
 }
 
 val getUser = StubGetUserUseCase(defaultUser)
 
-getUser.invoke.calledOnce()
+getUser.invoke.called()
 getUser.invoke.calledWith("42")
-getUser.invoke.willReturn(otherUser)
-getUser.invoke.willThrow(NetworkError())
+getUser.invoke.returns(otherUser)
+getUser.invoke.throws(NetworkError())
 ```
 
-## Арность и фабрики
+## Arity and factories
 
-У каждого класса `StubCall0`..`StubCall6` есть свои статические `value(x)` и `unit()` — фабрику вызываем через класс нужной арности. Для `StubCall0` тип результата выводится сам. Для `StubCall1`..`StubCall6` понадобится явная аннотация типа на `val`, потому что типы аргументов нигде не встречаются в самом вызове фабрики:
+Each class `StubCall0`..`StubCall6` has its own static `returns(x)` and `unit()` — call the factory through the class matching the arity you need. For `StubCall0` the result type is inferred automatically. For `StubCall1`..`StubCall6` you'll need an explicit type annotation on the `val`, since the argument types don't otherwise appear anywhere in the factory call:
 
 ```kotlin
-// 0 аргументов — тип выводится автоматически
-val invoke = StubCall0.value(settings)                       // StubCall0<Settings>
+// 0 arguments — the type is inferred automatically
+val invoke = StubCall0.returns(settings)                       // StubCall0<Settings>
 
-// 1 аргумент
-val invoke: StubCall1<String, User> = StubCall1.value(user)  // явная аннотация обязательна
+// 1 argument
+val invoke: StubCall1<String, User> = StubCall1.returns(user)  // explicit annotation required
 
-// 2 аргумента, результат Unit
+// 2 arguments, Unit result
 val invoke: StubCall2<String, Int, Unit> = StubCall2.unit()
-override fun invoke(accountId: String, amount: Int) = invoke(accountId, amount)
+override fun invoke(accountId: String, amount: Int) = invoke.invoke(accountId, amount)
 
-// возвращает Unit, без аргументов
+// returns Unit, no arguments
 val invoke = StubCall0.unit()                                 // StubCall0<Unit>
-override fun invoke() = invoke()
+override fun invoke() = invoke.invoke()
 ```
 
-Так же есть `StubCall3.value`..`StubCall6.value` / `StubCall3.unit`..`StubCall6.unit` — вплоть до шести аргументов.
+`StubCall3.returns`..`StubCall6.returns` / `StubCall3.unit`..`StubCall6.unit` are also available — up to six arguments.
 
-## API каждого StubCallN
+## API of each StubCallN
 
-- `calledOnce()` — падает с `StubCallAssertionError`, если вызовов не было или было больше одного.
-- `notCalled()` — падает, если хотя бы один вызов был.
-- `calledWith(a, b, ...)` — падает, если среди записанных вызовов нет вызова с такими аргументами (недоступно у `StubCall0`, у него нет аргументов).
-- `callCount` — сколько раз объект вызывали.
-- `willReturn(value)` — меняет значение, которое будут возвращать следующие вызовы.
-- `willThrow(error)` — следующие вызовы будут бросать `error` (сам вызов при этом всё равно фиксируется).
+- `called(times: Int = 1)` — fails with `StubCallAssertionError` if the recorded call count doesn't equal `times`; `times` must be `>= 0`.
+- `notCalled()` — fails if there was at least one call.
+- `calledWith(a, b, ...)` — fails if none of the recorded calls matches these arguments (not available on `StubCall0`, which takes no arguments).
+- `callCount` — how many times the object was called.
+- `returns(value)` — changes the value that subsequent calls will return.
+- `throws(error)` — subsequent calls will throw `error` (the call itself is still recorded).
 
-## Подключение
+## Setup
 
-Пока библиотека не опубликована в Maven Central — подключайте её как composite build:
+The library isn't published to Maven Central yet — include it as a composite build:
 
 ```kotlin
-// settings.gradle.kts потребляющего проекта
+// settings.gradle.kts of the consuming project
 includeBuild("../stub-call")
 ```
 
-или соберите и опубликуйте в локальный Maven-репозиторий:
+or build it and publish to your local Maven repository:
 
 ```
 ./gradlew publishToMavenLocal
 ```
 
-## Что осознанно не реализовано в этой версии
+## Deliberately not implemented in this version
 
-- Проверка порядка вызовов между разными стабами (order checking).
-- suspend/coroutine-функции.
-- Matcher DSL (`any()`, `argThat {}`) — сравнение аргументов только через `equals()`.
-- Разные ответы по номеру вызова (`willReturn(x).thenReturn(y)`).
-- "Красивое" сравнение массивов/коллекций в сообщениях об ошибках — для `Array` возможны ложные срабатывания из-за сравнения по ссылке.
+- Call order verification across different stubs (order checking).
+- suspend/coroutine functions.
+- A matcher DSL (`any()`, `argThat {}`) — argument comparison only via `equals()`.
+- Different responses by call number (`returns(x).thenReturn(y)`).
+- "Pretty" array/collection comparison in error messages — for `Array`, false negatives are possible due to reference-based comparison.

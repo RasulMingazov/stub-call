@@ -15,18 +15,19 @@ internal class CallRecorder<R>(initial: R) {
         return returnValue
     }
 
-    fun willReturn(value: R) {
+    fun returns(value: R) {
         returnValue = value
         thrownError = null
     }
 
-    fun willThrow(error: Throwable) {
+    fun throws(error: Throwable) {
         thrownError = error
     }
 
-    fun calledOnce() {
-        if (callCount != 1) {
-            throw StubCallAssertionError("expected exactly one call, but it was called $callCount time(s)")
+    fun called(times: Int) {
+        require(times >= 0) { "times must be >= 0, but was $times" }
+        if (callCount != times) {
+            throw StubCallAssertionError("expected exactly $times call(s), but it was called $callCount time(s)")
         }
     }
 

@@ -9,58 +9,58 @@ private data class User(val id: String, val name: String)
 class StubCall1Test {
 
     @Test
-    fun `returns the initial value regardless of the argument`() {
+    fun `GIVEN an initial value, WHEN invoked, THEN returns it`() {
         val user = User("42", "Ada")
-        val stub = StubCall1.value<String, User>(user)
+        val stub = StubCall1.returns<String, User>(user)
 
-        assertEquals(user, stub("42"))
+        assertEquals(user, stub.invoke("42"))
     }
 
     @Test
-    fun `records the argument of each call`() {
-        val stub = StubCall1.value<String, Unit>(Unit)
+    fun `GIVEN a stub, WHEN invoked twice, THEN callCount is 2`() {
+        val stub = StubCall1.returns<String, Unit>(Unit)
 
-        stub("a")
-        stub("b")
+        stub.invoke("a")
+        stub.invoke("b")
 
         assertEquals(2, stub.callCount)
     }
 
     @Test
-    fun `calledWith passes when a matching call was recorded`() {
-        val stub = StubCall1.value<String, Unit>(Unit)
+    fun `GIVEN invoked with an argument, WHEN calledWith it, THEN passes`() {
+        val stub = StubCall1.returns<String, Unit>(Unit)
 
-        stub("42")
+        stub.invoke("42")
 
         stub.calledWith("42")
     }
 
     @Test
-    fun `calledWith fails when no call matches the argument`() {
-        val stub = StubCall1.value<String, Unit>(Unit)
+    fun `GIVEN invoked with an argument, WHEN calledWith another, THEN fails`() {
+        val stub = StubCall1.returns<String, Unit>(Unit)
 
-        stub("42")
+        stub.invoke("42")
 
         assertFailsWith<StubCallAssertionError> { stub.calledWith("43") }
     }
 
     @Test
-    fun `willReturn overrides the result of later calls`() {
-        val stub = StubCall1.value<String, String>("first")
+    fun `GIVEN returns called again, WHEN invoked, THEN returns the new value`() {
+        val stub = StubCall1.returns<String, String>("first")
 
-        stub.willReturn("second")
+        stub.returns("second")
 
-        assertEquals("second", stub("42"))
+        assertEquals("second", stub.invoke("42"))
     }
 
     @Test
-    fun `willThrow makes the call throw but still records the argument`() {
-        val stub = StubCall1.value<String, Unit>(Unit)
+    fun `GIVEN throws is set, WHEN invoked, THEN throws and records the argument`() {
+        val stub = StubCall1.returns<String, Unit>(Unit)
         val error = IllegalStateException("boom")
 
-        stub.willThrow(error)
+        stub.throws(error)
 
-        assertFailsWith<IllegalStateException> { stub("42") }
+        assertFailsWith<IllegalStateException> { stub.invoke("42") }
         stub.calledWith("42")
     }
 }

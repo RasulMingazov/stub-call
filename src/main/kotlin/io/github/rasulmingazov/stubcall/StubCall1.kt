@@ -7,20 +7,20 @@ class StubCall1<A, R> internal constructor(initial: R) {
     val callCount: Int
         get() = recorder.callCount
 
-    operator fun invoke(a: A): R = recorder.record(listOf(a))
+    fun invoke(a: A): R = recorder.record(listOf(a))
 
-    fun calledOnce() = recorder.calledOnce()
+    fun called(times: Int = 1) = recorder.called(times)
 
     fun notCalled() = recorder.notCalled()
 
     fun calledWith(a: A) = recorder.calledWith(listOf(a))
 
-    fun willReturn(value: R) = recorder.willReturn(value)
+    fun returns(value: R) = recorder.returns(value)
 
-    fun willThrow(error: Throwable) = recorder.willThrow(error)
+    fun throws(error: Throwable) = recorder.throws(error)
 
     companion object {
-        fun <A, R> value(result: R): StubCall1<A, R> = StubCall1(result)
+        fun <A, R> returns(result: R): StubCall1<A, R> = StubCall1(result)
         fun <A> unit(): StubCall1<A, Unit> = StubCall1(Unit)
     }
 }
