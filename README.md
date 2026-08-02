@@ -10,6 +10,7 @@ Hand-written stubs usually mean writing the same boilerplate every time: a field
 
 ```kotlin
 class StubGetUserUseCase(user: User) : GetUserUseCase {
+
     val invoke: StubCall1<String, User> = StubCall1.returns(user)
 
     override fun invoke(id: String): User = invoke.invoke(id)
