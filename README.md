@@ -4,13 +4,14 @@ Type-safe test doubles for Kotlin, without a mocking framework or reflection.
 
 ## Why
 
-Hand-written stubs for a use case or callback interface usually mean writing the same boilerplate every time: a field to hold the return value, a counter for calls, a list of recorded arguments, an assertion helper. StubCall is that boilerplate, written once and reused — `StubCall0`..`StubCall6` cover interfaces with zero to six arguments, fully typed, so a stub returning the wrong type fails to compile instead of failing at runtime.
+Hand-written stubs usually mean writing the same boilerplate every time: a field to hold the return value, a counter for calls, a list of recorded arguments, an assertion helper. StubCall is that boilerplate, written once and reused — `StubCall0`..`StubCall6` cover interfaces with zero to six arguments, fully typed, so a stub returning the wrong type fails to compile instead of failing at runtime.
 
 ## Example
 
 ```kotlin
 class StubGetUserUseCase(user: User) : GetUserUseCase {
     val invoke: StubCall1<String, User> = StubCall1.returns(user)
+
     override fun invoke(id: String): User = invoke.invoke(id)
 }
 
