@@ -59,6 +59,18 @@ dependencies {
 
 For Android instrumentation tests, use `androidTestImplementation(...)` instead.
 
+## Publishing to a file-based Maven repository
+
+Pass the target repository path through the `localMavenRepository` Gradle property:
+
+```bash
+./gradlew publishAllPublicationsToLocalRepository \
+  -PlocalMavenRepository=/absolute/path/to/maven-repository
+```
+
+Increase the library version before publishing changed code. Do not overwrite an already consumed
+version because Gradle may continue using its cached artifacts.
+
 ## Not supported
 
 Order verification across stubs, suspend functions, argument matchers (`any()`, `argThat {}`), and per-call responses (`returns(x).thenReturn(y)`) — arguments are compared with `equals()` only.

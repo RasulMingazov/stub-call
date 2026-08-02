@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform") version "2.1.21"
     id("com.android.kotlin.multiplatform.library") version "9.2.1"
+    `maven-publish`
 }
 
 group = "io.github.rasulmingazov"
@@ -30,6 +31,17 @@ kotlin {
     sourceSets {
         commonTest.dependencies {
             implementation(kotlin("test"))
+        }
+    }
+}
+
+providers.gradleProperty("localMavenRepository").orNull?.let { repositoryPath ->
+    publishing {
+        repositories {
+            maven {
+                name = "Local"
+                url = uri(repositoryPath)
+            }
         }
     }
 }
