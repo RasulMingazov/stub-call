@@ -6,7 +6,7 @@ import kotlin.test.assertEquals
 class StubCall6Test {
 
     @Test
-    fun `GIVEN max arity, WHEN invoked, THEN returns, calledWith and called all work`() {
+    fun givenMaxArityWhenInvokedThenReturnsCalledWithAndCalledAllWork() {
         val stub = StubCall6.returns<Int, Int, Int, Int, Int, Int, Int>(0)
 
         stub.returns(21)

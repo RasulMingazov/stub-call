@@ -35,18 +35,29 @@ getUser.invoke.throws(NetworkError())
 
 ## Setup
 
-Not yet published to Maven Central. Use it as a composite build:
+Use it as a local composite build. Keep `stub-call` next to the project that consumes it:
+
+```text
+Projects/
+  stub-call/
+  your-app/
+```
+
+Add it to the consuming project's `settings.gradle.kts`:
 
 ```kotlin
-// settings.gradle.kts of the consuming project
 includeBuild("../stub-call")
 ```
 
-or publish it locally:
+Then add the dependency in the module that owns your tests:
 
+```kotlin
+dependencies {
+    testImplementation("io.github.rasulmingazov:stubcall:0.1.0")
+}
 ```
-./gradlew publishToMavenLocal
-```
+
+For Android instrumentation tests, use `androidTestImplementation(...)` instead.
 
 ## Not supported
 

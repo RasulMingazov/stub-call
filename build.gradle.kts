@@ -1,22 +1,35 @@
 plugins {
-    kotlin("jvm") version "2.0.21"
+    kotlin("multiplatform") version "2.1.21"
+    id("com.android.kotlin.multiplatform.library") version "9.2.1"
 }
 
 group = "io.github.rasulmingazov"
 version = "0.1.0"
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    testImplementation(kotlin("test-junit5"))
-}
-
 kotlin {
-    jvmToolchain(17)
-}
+    jvm {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
+    }
 
-tasks.test {
-    useJUnitPlatform()
+    android {
+        namespace = "io.github.rasulmingazov.stubcall"
+        compileSdk = 36
+        minSdk = 24
+        withHostTest {}
+
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
+    }
+
+    iosArm64()
+    iosSimulatorArm64()
+
+    sourceSets {
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
+    }
 }

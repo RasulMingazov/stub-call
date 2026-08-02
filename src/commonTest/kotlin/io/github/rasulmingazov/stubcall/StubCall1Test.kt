@@ -9,7 +9,7 @@ private data class User(val id: String, val name: String)
 class StubCall1Test {
 
     @Test
-    fun `GIVEN an initial value, WHEN invoked, THEN returns it`() {
+    fun givenInitialValueWhenInvokedThenReturnsIt() {
         val user = User("42", "Ada")
         val stub = StubCall1.returns<String, User>(user)
 
@@ -17,7 +17,7 @@ class StubCall1Test {
     }
 
     @Test
-    fun `GIVEN a stub, WHEN invoked twice, THEN callCount is 2`() {
+    fun givenStubWhenInvokedTwiceThenCallCountIsTwo() {
         val stub = StubCall1.returns<String, Unit>(Unit)
 
         stub.invoke("a")
@@ -27,7 +27,7 @@ class StubCall1Test {
     }
 
     @Test
-    fun `GIVEN invoked with an argument, WHEN calledWith it, THEN passes`() {
+    fun givenInvokedWithArgumentWhenCalledWithItThenPasses() {
         val stub = StubCall1.returns<String, Unit>(Unit)
 
         stub.invoke("42")
@@ -36,7 +36,7 @@ class StubCall1Test {
     }
 
     @Test
-    fun `GIVEN invoked with an argument, WHEN calledWith another, THEN fails`() {
+    fun givenInvokedWithArgumentWhenCalledWithAnotherThenFails() {
         val stub = StubCall1.returns<String, Unit>(Unit)
 
         stub.invoke("42")
@@ -45,7 +45,7 @@ class StubCall1Test {
     }
 
     @Test
-    fun `GIVEN returns called again, WHEN invoked, THEN returns the new value`() {
+    fun givenReturnsCalledAgainWhenInvokedThenReturnsNewValue() {
         val stub = StubCall1.returns<String, String>("first")
 
         stub.returns("second")
@@ -54,7 +54,7 @@ class StubCall1Test {
     }
 
     @Test
-    fun `GIVEN throws is set, WHEN invoked, THEN throws and records the argument`() {
+    fun givenThrowsIsSetWhenInvokedThenThrowsAndRecordsArgument() {
         val stub = StubCall1.returns<String, Unit>(Unit)
         val error = IllegalStateException("boom")
 

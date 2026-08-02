@@ -7,7 +7,7 @@ import kotlin.test.assertFailsWith
 class StubCall2Test {
 
     @Test
-    fun `GIVEN invoked with two arguments, WHEN calledWith, THEN matches exact arguments only`() {
+    fun givenInvokedWithTwoArgumentsWhenCalledWithThenMatchesExactArgumentsOnly() {
         val stub = StubCall2.returns<String, Int, Unit>(Unit)
 
         stub.invoke("acc-1", 100)
@@ -17,7 +17,7 @@ class StubCall2Test {
     }
 
     @Test
-    fun `GIVEN a stubbed value, WHEN invoked, THEN returns it`() {
+    fun givenStubbedValueWhenInvokedThenReturnsIt() {
         val stub = StubCall2.returns<String, Int, Boolean>(true)
 
         assertEquals(true, stub.invoke("acc-1", 100))
